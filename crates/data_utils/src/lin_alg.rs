@@ -6,7 +6,7 @@
 use std::{
     fmt::Debug,
     iter::Sum,
-    ops::{Add, AddAssign, Sub, SubAssign},
+    ops::{Add, AddAssign, Neg, Sub, SubAssign},
 };
 
 /// Stores a point vector.
@@ -44,6 +44,16 @@ impl Point {
     pub fn dot(&self, other: &Self) -> f64 {
         // dot product -- multiply each non-zero term and sum
         self.0.iter().zip(&other.0).map(|(&a, &b)| a * b).sum()
+    }
+}
+
+impl Neg for Point {
+    type Output = Self;
+
+    #[inline]
+    #[must_use]
+    fn neg(self) -> Self::Output {
+        self.scale(-1.0)
     }
 }
 
@@ -164,7 +174,7 @@ impl Sub for Point {
             for (x1, x2) in point.0.iter_mut().zip(self.0) {
                 *x1 -= x2;
             }
-            point.scale(-1.0)
+            -point
         }
     }
 }
@@ -188,7 +198,7 @@ impl Sub for &Point {
             for (x1, &x2) in point.0.iter_mut().zip(&self.0) {
                 *x1 -= x2;
             }
-            point.scale(-1.0)
+            -point
         }
     }
 }
@@ -223,7 +233,7 @@ impl Sub<Point> for &Point {
         point
             .0
             .extend(self.0.iter().skip(point.0.len()).map(|x| -x));
-        point.scale(-1.0)
+        -point
     }
 }
 

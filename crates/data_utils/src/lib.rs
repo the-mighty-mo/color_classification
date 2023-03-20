@@ -4,12 +4,17 @@
 //! Author: Benjamin Hall
 
 pub mod classify;
+pub mod color;
 pub mod io;
 pub mod lin_alg;
 pub mod sort;
 
 pub use lin_alg::Point;
-use std::{error::Error, fmt::Debug, str::FromStr};
+use std::{
+    error::Error,
+    fmt::{Debug, Display},
+    str::FromStr,
+};
 
 /// Stores a point of data.
 #[derive(Clone, Debug, PartialEq)]
@@ -46,5 +51,17 @@ where
         let point = Point(point);
         // return the DataPoint
         Ok(Self { point, class })
+    }
+}
+
+impl<T> Display for DataPoint<T>
+where
+    T: Display,
+{
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        for v in &self.point.0 {
+            write!(f, "{}   ", *v)?;
+        }
+        write!(f, "{}", self.class)
     }
 }
