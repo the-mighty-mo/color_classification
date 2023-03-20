@@ -58,7 +58,7 @@ fn main() {
     }
 
     // pull out number of nearest neighbors
-    let Ok(num_neighbors) = str::parse::<usize>(&args[3]) else {
+    let Ok(num_neighbors) = args[3].parse::<usize>() else {
         println!("Error: invalid number of nearest neighbors");
         return;
     };

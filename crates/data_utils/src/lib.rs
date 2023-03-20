@@ -41,11 +41,11 @@ where
         };
 
         // parse classification
-        let class = str::parse::<T>(last)?;
+        let class = last.parse::<T>()?;
         // map all other elements to components of a point vector
         let point: Vec<_> = rest
             .iter()
-            .map(|&p| str::parse::<f64>(p))
+            .map(|&p| p.parse::<f64>())
             .collect::<Result<Vec<_>, _>>()?;
         // wrap displacement vector in a Point
         let point = Point(point);

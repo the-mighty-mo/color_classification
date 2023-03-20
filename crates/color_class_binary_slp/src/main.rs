@@ -65,7 +65,7 @@ fn main() {
 
     // pull out learning rate
     let learning_rate = if let Some(arg) = args.get(3) {
-        let Ok(learning_rate) = str::parse::<f64>(arg) else {
+        let Ok(learning_rate) = arg.parse::<f64>() else {
             println!("Error: invalid learning rate");
             return;
         };
@@ -76,7 +76,7 @@ fn main() {
 
     // pull out training threshold
     let threshold = if let Some(arg) = args.get(4) {
-        let Ok(threshold) = str::parse::<f64>(arg) else {
+        let Ok(threshold) = arg.parse::<f64>() else {
             println!("Error: invalid training threshold");
             return;
         };
