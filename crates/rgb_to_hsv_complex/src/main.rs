@@ -94,6 +94,7 @@ fn main() {
         let (r, g, b) = (r.re as u8, g.re as u8, b.re as u8);
         let Hsv { h, s, v } = Hsv::from(Rgb { r, g, b });
         d.point.0[0..3].copy_from_slice(&[
+            // complex value on the unit circle
             Complex::from_polar(1.0, h.to_radians()),
             s.into(),
             v.into(),
