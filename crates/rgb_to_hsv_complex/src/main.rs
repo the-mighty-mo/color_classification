@@ -1,5 +1,6 @@
 //! This program converts a file of RGB colors
-//! to a file of HSV colors.
+//! to a file of HSV colors, using a complex
+//! number on the unit circle to represent the hue.
 //!
 //! Author: Benjamin Hall
 
@@ -9,10 +10,13 @@ use std::{
     io::{self, BufWriter, Write},
 };
 
-use data_utils::color::{Hsv, Rgb};
+use data_utils::{
+    color::{Hsv, Rgb},
+    Complex,
+};
 
-/// Runs the RGB to HSV conversion on an input file, writing the
-/// results to an output file.
+/// Runs the RGB to HSV (Complex) conversion on an input file,
+/// writing the results to an output file.
 ///
 /// Program input is the input filename and the output filename.
 fn main() {
@@ -21,7 +25,7 @@ fn main() {
     if args.len() != 3 {
         /* invalid number of arguments, print a help message */
         let mut lock = io::stdout().lock();
-        writeln!(lock, "RGB to HSV Converter").unwrap();
+        writeln!(lock, "RGB to HSV (Complex) Converter").unwrap();
         writeln!(lock, "Author: Benjamin Hall").unwrap();
         writeln!(
             lock,
@@ -33,6 +37,16 @@ fn main() {
         writeln!(
             lock,
             "Converts the data in the input file from RGB to HSV, writing the results to the output file."
+        )
+        .unwrap();
+        writeln!(
+            lock,
+            "The hue is represented as a complex number using Euler's formula: e^ix = cos(x) + i*sin(x)."
+        )
+        .unwrap();
+        writeln!(
+            lock,
+            "This can be useful in applications that need to handle wrapping near the 0/360 boundary."
         )
         .unwrap();
 
@@ -79,7 +93,11 @@ fn main() {
         let [r, g, b] = d.point.0[0..3] else { unreachable!() };
         let (r, g, b) = (r.re as u8, g.re as u8, b.re as u8);
         let Hsv { h, s, v } = Hsv::from(Rgb { r, g, b });
-        d.point.0[0..3].copy_from_slice(&[h.into(), s.into(), v.into()]);
+        d.point.0[0..3].copy_from_slice(&[
+            Complex::from_polar(1.0, h.to_radians()),
+            s.into(),
+            v.into(),
+        ]);
         d.to_string()
     });
 

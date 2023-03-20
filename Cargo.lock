@@ -67,3 +67,10 @@ version = "0.1.0"
 dependencies = [
  "data_utils",
 ]
+
+[[package]]
+name = "rgb_to_hsv_complex"
+version = "0.1.0"
+dependencies = [
+ "data_utils",
+]

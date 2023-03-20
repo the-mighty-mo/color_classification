@@ -14,7 +14,7 @@ use crate::{DataPoint, Point};
 fn generate_random_weights(size: usize) -> Point {
     Point(
         (0..size)
-            .map(|_| fastrand::f64().mul_add(2.0, -1.0))
+            .map(|_| fastrand::f64().mul_add(2.0, -1.0).into())
             .collect(),
     )
 }
@@ -60,7 +60,7 @@ where
             // offset training point by the mean
             let mut point = &d.point - &train_mean;
             // y = [1, x]
-            point.0.insert(0, 1.0);
+            point.0.insert(0, 1.0.into());
             DataPoint {
                 point,
                 class: &d.class,
@@ -81,7 +81,7 @@ where
             // get linear classifier value using the dot product of the data point and the weights
             let lin_class_value = weights.dot(&d.point);
             // convert linear classifier value to binary classification: 1.0 or -1.0
-            let class_guess_value = lin_class_value.signum();
+            let class_guess_value = lin_class_value.re.signum();
             // convert actual class to binary classification: 1.0 or -1.0
             let class_value = if d.class == pos_class { 1.0 } else { -1.0 };
             // calculate error in classification
@@ -93,7 +93,11 @@ where
                 // scale point by the error
                 let weight_error = d.point.clone().scale(error);
                 // scale by learning rate
-                let weight_adjustment = weight_error.scale(learning_rate);
+                let mut weight_adjustment = weight_error.scale(learning_rate);
+                // also take conjugate of complex numbers
+                for weight in &mut weight_adjustment.0 {
+                    *weight = weight.conjugate();
+                }
                 // update weights
                 weights += weight_adjustment;
             }
@@ -111,11 +115,11 @@ where
         .map(|data| {
             // run the SLP on this data
             let mut point = &data.point - &train_mean;
-            point.0.insert(0, 1.0);
+            point.0.insert(0, 1.0.into());
             let class_result = weights.dot(&point);
 
             // determine if positive or negative class
-            let class_guess = if class_result > 0.0 {
+            let class_guess = if class_result.re > 0.0 {
                 pos_class.clone()
             } else {
                 neg_class.clone()
@@ -179,7 +183,7 @@ where
             // offset training point by the mean
             let mut point = &d.point - &train_mean;
             // y = [1, x]
-            point.0.insert(0, 1.0);
+            point.0.insert(0, 1.0.into());
             DataPoint {
                 point,
                 class: &d.class,
@@ -203,7 +207,7 @@ where
                 .map(|weights| (weights.class, weights.w.dot(&d.point)));
             // find the maximum classification value, pull out class
             let class_guess = class_results
-                .max_by(|a, b| a.1.total_cmp(&b.1))
+                .max_by(|a, b| a.1.re.total_cmp(&b.1.re))
                 .map(|(class, _)| class)
                 .unwrap();
             // if classification is wrong, adjust weights
@@ -211,7 +215,11 @@ where
                 misclassified += 1;
 
                 // scale point by learning rate
-                let weight_adjustment = d.point.clone().scale(learning_rate);
+                let mut weight_adjustment = d.point.clone().scale(learning_rate);
+                // also take conjugate of complex numbers
+                for weight in &mut weight_adjustment.0 {
+                    *weight = weight.conjugate();
+                }
                 // update weights
                 for weights in weights_vec.iter_mut() {
                     if weights.class == d.class {
@@ -237,13 +245,13 @@ where
         .map(|data| {
             // run the SLP on this data
             let mut point = &data.point - &train_mean;
-            point.0.insert(0, 1.0);
+            point.0.insert(0, 1.0.into());
 
             // find the maximum classification value, pull out class
             let class_guess = weights_vec
                 .iter()
                 .map(|weights| (weights.class, weights.w.dot(&point)))
-                .max_by(|a, b| a.1.total_cmp(&b.1))
+                .max_by(|a, b| a.1.re.total_cmp(&b.1.re))
                 .map_or_else(T::default, |(class, _)| class.clone());
 
             // wrap in a Classification

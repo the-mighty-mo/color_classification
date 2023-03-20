@@ -5,10 +5,12 @@
 
 pub mod classify;
 pub mod color;
+pub mod complex;
 pub mod io;
 pub mod lin_alg;
 pub mod sort;
 
+pub use complex::Complex;
 pub use lin_alg::Point;
 use std::{
     error::Error,
@@ -45,7 +47,7 @@ where
         // map all other elements to components of a point vector
         let point: Vec<_> = rest
             .iter()
-            .map(|&p| p.parse::<f64>())
+            .map(|&p| p.parse::<Complex>())
             .collect::<Result<Vec<_>, _>>()?;
         // wrap displacement vector in a Point
         let point = Point(point);

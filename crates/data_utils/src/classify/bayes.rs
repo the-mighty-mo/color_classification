@@ -4,7 +4,7 @@
 //! Author: Benjamin Hall
 
 use super::Classification;
-use crate::{DataPoint, Point};
+use crate::{Complex, DataPoint, Point};
 use std::collections::BTreeMap;
 
 /// Runs the Bayesian plug-in rule with the given training data
@@ -22,7 +22,7 @@ where
         /// w = 2µ
         w: Point,
         /// w_0 = µ⋅µ
-        w_0: f64,
+        w_0: Complex,
     }
 
     // group training data by classification
@@ -46,9 +46,17 @@ where
     // calculate the two weight components for each classification
     let train_data_weights: Vec<_> = train_data_means
         .map(|(class, mean)| {
-            let w_0 = mean.dot(&mean);
+            // create a point with the conjugates of all complex numbers
+            let mut mean_conj = mean.clone();
+            for m in &mut mean_conj.0 {
+                *m = m.conjugate();
+            }
+
+            // dot the mean with its conjugate
+            let w_0 = mean.dot(&mean_conj);
             let weights = Weights {
-                w: mean.scale(2.0),
+                // conjugate mean for weight offset
+                w: mean_conj.scale(2.0),
                 w_0,
             };
             (class, weights)
@@ -65,7 +73,7 @@ where
                 .map(|(class, weights)| (*class, weights.w.dot(&data.point) - weights.w_0));
             // find the maximum classification value, pull out class
             let class_guess = class_results
-                .max_by(|a, b| a.1.total_cmp(&b.1))
+                .max_by(|a, b| a.1.re.total_cmp(&b.1.re))
                 .map_or_else(T::default, |(class, _)| class.clone());
             // wrap in a Classification
             Classification { data, class_guess }

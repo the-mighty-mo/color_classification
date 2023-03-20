@@ -9,9 +9,11 @@ use std::{
     ops::{Add, AddAssign, Neg, Sub, SubAssign},
 };
 
+use crate::Complex;
+
 /// Stores a point vector.
-#[derive(Clone, Default, PartialEq, PartialOrd)]
-pub struct Point(pub Vec<f64>);
+#[derive(Clone, Default, PartialEq)]
+pub struct Point(pub Vec<Complex>);
 
 impl Debug for Point {
     #[inline]
@@ -25,7 +27,13 @@ impl Point {
     #[inline]
     #[must_use]
     pub fn magnitude(&self) -> f64 {
-        f64::sqrt(self.0.iter().map(|&x| x * x).sum())
+        f64::sqrt(
+            self.0
+                .iter()
+                .map(|&x| x * x.conjugate())
+                .sum::<Complex>()
+                .magnitude(),
+        )
     }
 
     /// Scales the point by the given scalar.
@@ -33,7 +41,7 @@ impl Point {
     #[must_use]
     pub fn scale(mut self, scalar: f64) -> Self {
         for x in &mut self.0 {
-            *x *= scalar;
+            *x = x.scale(scalar);
         }
         self
     }
@@ -41,7 +49,7 @@ impl Point {
     /// Computes the dot product of two points.
     #[inline]
     #[must_use]
-    pub fn dot(&self, other: &Self) -> f64 {
+    pub fn dot(&self, other: &Self) -> Complex {
         // dot product -- multiply each non-zero term and sum
         self.0.iter().zip(&other.0).map(|(&a, &b)| a * b).sum()
     }
@@ -214,7 +222,9 @@ impl Sub<&Self> for Point {
             *x1 -= x2;
         }
         // subtract any additional dimensions present in rhs
-        point.0.extend(rhs.0.iter().skip(point.0.len()).map(|x| -x));
+        point
+            .0
+            .extend(rhs.0.iter().skip(point.0.len()).map(|&x| -x));
         point
     }
 }
@@ -232,7 +242,7 @@ impl Sub<Point> for &Point {
         // subtract any additional dimensions present in self
         point
             .0
-            .extend(self.0.iter().skip(point.0.len()).map(|x| -x));
+            .extend(self.0.iter().skip(point.0.len()).map(|&x| -x));
         -point
     }
 }
@@ -244,7 +254,7 @@ impl SubAssign<&Self> for Point {
             *x1 -= x2;
         }
         // subtract any additional dimensions present in rhs
-        self.0.extend(rhs.0.iter().skip(self.0.len()).map(|x| -x));
+        self.0.extend(rhs.0.iter().skip(self.0.len()).map(|&x| -x));
     }
 }
 
