@@ -26,7 +26,7 @@ fn main() {
         writeln!(lock, "Author: Benjamin Hall").unwrap();
         writeln!(
             lock,
-            "Usage: ./color_class_binary_slp [train data file name] [test data file name] [learning rate = 1.0] [threshold = 0.0]"
+            "Usage: ./color_class_binary_slp [train data filename] [test data filename] [learning rate = 1.0] [threshold = 0.0]"
         )
         .unwrap();
         writeln!(lock).unwrap();

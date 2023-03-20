@@ -24,7 +24,7 @@ fn main() {
         writeln!(lock, "Author: Benjamin Hall").unwrap();
         writeln!(
             lock,
-            "Usage: ./color_class_bayes [train data file name] [test data file name]"
+            "Usage: ./color_class_bayes [train data filename] [test data filename]"
         )
         .unwrap();
         writeln!(lock).unwrap();

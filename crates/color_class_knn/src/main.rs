@@ -24,7 +24,7 @@ fn main() {
         writeln!(lock, "Author: Benjamin Hall").unwrap();
         writeln!(
             lock,
-            "Usage: ./color_class_knn [train data file name] [test data file name] [num neighbors]"
+            "Usage: ./color_class_knn [train data filename] [test data filename] [num neighbors]"
         )
         .unwrap();
         writeln!(lock).unwrap();
