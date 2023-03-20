@@ -83,12 +83,15 @@ fn main() {
         d.to_string()
     });
 
-    let Ok(output_file) = OpenOptions::new().write(true).create(true).open(output_data_file_name) else {
-        println!("Error: could not open output file");
-        return;
-    };
-    let mut writer = BufWriter::new(output_file);
-    for line in output_data {
-        writeln!(writer, "{line}").unwrap();
+    {
+        let Ok(output_file) = OpenOptions::new().write(true).create(true).open(output_data_file_name) else {
+            println!("Error: could not open output file");
+            return;
+        };
+        let mut writer = BufWriter::new(output_file);
+        for line in output_data {
+            writeln!(writer, "{line}").unwrap();
+        }
+        writer.flush().unwrap();
     }
 }
