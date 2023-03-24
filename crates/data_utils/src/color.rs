@@ -35,17 +35,17 @@ impl From<Rgb> for Hsv {
         let c_min = r.min(g).min(b);
         let chroma = c_max - c_min;
 
+        let v = c_max;
         let h = if chroma == 0.0 {
             0.0
-        } else if c_max == r {
+        } else if v == r {
             60.0 * ((g - b) / chroma).rem_euclid(6.0)
-        } else if c_max == g {
+        } else if v == g {
             60.0 * ((b - r) / chroma + 2.0)
         } else {
             60.0 * ((r - g) / chroma + 4.0)
         };
-        let s = if c_max == 0.0 { 0.0 } else { chroma / c_max };
-        let v = c_max;
+        let s = if v == 0.0 { 0.0 } else { chroma / v };
 
         Self { h, s, v }
     }
