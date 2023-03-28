@@ -24,7 +24,7 @@
     retuned when the environment changes, which can be time consuming. This study analyzes the effectiveness of using
     supervised machine learning to replace these traditional algorithms. The k-nearest neighbor, Bayesian linear
     classifier, and multiclass single-layer perceptron (SLP) algorithms were tested. Additionally, the colors were tested
-    in both the RGB format and the complex HSV format, where complex numbers on the unit circle are used to represent
+    in both the RGB format and the complex HSV format, where numbers on the complex unit circle are used to represent
     hue. Results show that a multiclass SLP, adjusted to support complex numbers, can most accurately and efficiently
     classify colors, and the complex HSV format outperforms RGB with the data tested.
 
@@ -223,7 +223,7 @@ that of the green colors.
 
 \begin{figure}[!t]
     \centering
-    \subfloat{\includegraphics{hsv_polar.png}}
+    \subfloat{\includegraphics[width=0.9\columnwidth]{hsv_polar.png}}
     \hfil
     \caption{MATLAB~\cite{matlab} plot of training data HSV hues \( \left(\theta\right) \) and saturations \( \left(r\right) \) in polar form, colored by classification.}%
     \label{hsv_polar}
@@ -486,11 +486,11 @@ blue, will perform better using RGB than with HSV.\@
 
 \begin{figure*}[!b]
     \centering
-    \subfloat{\includegraphics{rgb_isometric.png}}
-    \subfloat{\includegraphics{rgb_front.png}}
+    \subfloat{\includegraphics[width=\columnwidth]{rgb_isometric.png}}
+    \subfloat{\includegraphics[width=\columnwidth]{rgb_front.png}}
     \hfil
-    \subfloat{\includegraphics{rgb_left.png}}
-    \subfloat{\includegraphics{rgb_top.png}}
+    \subfloat{\includegraphics[width=\columnwidth]{rgb_left.png}}
+    \subfloat{\includegraphics[width=\columnwidth]{rgb_top.png}}
     \hfil
     \caption{MATLAB~\cite{matlab} plot of training data RGB values, colored by classification.}%
     \label{rgb_data}
@@ -498,11 +498,11 @@ blue, will perform better using RGB than with HSV.\@
 
 \begin{figure*}[!t]
     \centering
-    \subfloat{\includegraphics{hsv_isometric.png}}
-    \subfloat{\includegraphics{hsv_front.png}}
+    \subfloat{\includegraphics[width=\columnwidth]{hsv_isometric.png}}
+    \subfloat{\includegraphics[width=\columnwidth]{hsv_front.png}}
     \hfil
-    \subfloat{\includegraphics{hsv_left.png}}
-    \subfloat{\includegraphics{hsv_top.png}}
+    \subfloat{\includegraphics[width=\columnwidth]{hsv_left.png}}
+    \subfloat{\includegraphics[width=\columnwidth]{hsv_top.png}}
     \hfil
     \caption{MATLAB~\cite{matlab} plot of training data HSV values, colored by classification.}%
     \label{hsv_data}
@@ -527,6 +527,7 @@ Fig.~\ref{program_output} shows an example of the output from running the multic
 \section{Program Source Code and Data Files}%
 \label{program_source}
 
+The data in this study is plotted in MATLAB~\cite{matlab}, and the algorithms are written in Rust.
 The source code and data files are available in \mbox{benjamin\_hall\_color\_classification.zip}.
 
 The data files used in the algorithms are as follows:
@@ -593,7 +594,7 @@ The data files used in the algorithms are as follows:
           \end{itemize}
 \end{itemize}
 
-\enlargethispage{-1.96in}
+\enlargethispage{-1.46in}
 
 \bibliographystyle{IEEEtran}
 \bibliography{IEEEabrv,refs}
