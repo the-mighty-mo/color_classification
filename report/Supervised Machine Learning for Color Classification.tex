@@ -21,12 +21,12 @@
 
 \begin{abstract}
     Color classification is typically achieved using hand-tuned algorithms. However, the algorithms generally need to be
-    retuned when the environment changes, which can be time consuming. This study analyzes the effectiveness of using
-    supervised machine learning to replace these traditional algorithms. The k-nearest neighbor, Bayesian linear
-    classifier, and multiclass single-layer perceptron (SLP) algorithms were tested. Additionally, the colors were tested
-    in both the RGB format and the complex HSV format, where numbers on the complex unit circle are used to represent
-    hue. Results show that a multiclass SLP, adjusted to support complex numbers, can most accurately and efficiently
-    classify colors, and the complex HSV format outperforms RGB with the data tested.
+    retuned when the environment changes, and the simple boundaries produced may not be sufficiently accurate. This study
+    analyzes the effectiveness of using supervised machine learning to replace these traditional algorithms. The k-nearest
+    neighbor, Bayesian linear classifier, and multiclass single-layer perceptron (SLP) algorithms were tested. Additionally,
+    the colors were tested in both the RGB format and the complex HSV format, where numbers on the complex unit circle are
+    used to represent hue. Results show that a multiclass SLP, adjusted to support complex numbers, can most accurately and
+    efficiently classify colors, and the complex HSV format outperforms RGB with the data tested.
 
     Further research is needed to prevent the SLP algorithm from entering a local minimum, as well as to compare its
     accuracy on the RGB and complex HSV formats with more advanced color groups, such as classifying into various
