@@ -62,12 +62,12 @@ out: k-nearest neighbors, the Bayesian linear classifier, and the single-layer p
 
 k-nearest neighbors is a very simple algorithm to implement and can handle non-linear
 classification boundaries. The algorithm calculates the distance between the test data point and
-each training data point, and then it partial sorts those distances until it has the n closest
+each training data point, and then it partial sorts those distances until it has the k nearest
 neighbors. The data gets whichever classification is most prominent among those neighbors.
 However, the algorithm slows down as the training data set grows, as both calculating the
 distances and performing the partial sort take linear time relative to the size of the training data.
 The algorithm also has a high memory cost, as it needs to keep the training data in memory
-during the entire program runtime to perform the partial sort.
+during the entire program runtime to perform the distance calculations and partial sort.
 
 The Bayesian linear classifier fixes both the time and memory costs by calculating ahead of time the
 mean vectors of the classifications. The algorithm only needs to keep a vector of classification means
@@ -83,7 +83,7 @@ provide a more general linear classifier. Instead of using a vector of means, th
 vector of weights by testing the training points against the weights, calculating the error, and
 adjusting the weights accordingly. In its simplest form, the SLP only splits data into two
 classifications using a linear boundary and a single vector, assigning positive outputs to one class
-and negative outputs to another. However, the algorithm can also be generalized into a multiclass
+and negative outputs to the other. However, the algorithm can also be generalized into a multiclass
 algorithm by storing weight vectors for each classification, as is the case with the Bayesian linear
 classifier.
 
