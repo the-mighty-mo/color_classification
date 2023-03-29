@@ -45,19 +45,20 @@ fairly simple algorithms, such as checking if the HSV values of a color are with
 range. However, the image processing can be an expensive operation, and the simple algorithms
 often need to be retuned if the environment changes, such as with new lighting. Additionally, the
 algorithms typically only target one or two colors, as hand-tuning the algorithm becomes more
-time-consuming and prone to error as the list of colors grows.
+time-consuming and prone to error as the list of colors grows. Furthermore, the algorithms often
+draw simple, rectangular boundaries between color classifications.
 
 AI provides an alternative method of color classification. Rather than relying on hand-tuning of
 algorithms whenever the environment changes and dealing with human error, an AI based on
 supervised machine learning can efficiently tune an algorithm to identify colors given enough
 training data. This can result in massive time savings, as humans now only need to collect data
 samples to feed the AI, and it has the potential to increase the accuracy of the algorithm, as it can
-mathematically optimize the classification problem.
+create advanced, mathematically optimized classification boundaries.
 
 \section{Technical Discussion}
 
 When it comes to supervised machine learning, there are three fairly simple algorithms that stand
-out: k-nearest neighbors, the Bayesian plug-in rule, and the single-layer perceptron algorithm.
+out: k-nearest neighbors, the Bayesian linear classifier, and the single-layer perceptron algorithm.
 
 k-nearest neighbors is a very simple algorithm to implement and can handle non-linear
 classification boundaries. The algorithm calculates the distance between the test data point and
@@ -68,14 +69,14 @@ distances and performing the partial sort take linear time relative to the size 
 The algorithm also has a high memory cost, as it needs to keep the training data in memory
 during the entire program runtime to perform the partial sort.
 
-The Bayesian plug-in rule fixes both the time and memory costs by calculating ahead of time the
-means of the classifications. The algorithm only needs to keep the vectors of classification means
+The Bayesian linear classifier fixes both the time and memory costs by calculating ahead of time the
+mean vectors of the classifications. The algorithm only needs to keep a vector of classification means
 during program runtime, and classifying a test data point is simple: for each classification, take
 the dot product of the data point with the classification's mean vector and add the result of the
-classification's mean dotted with itself. The data point then gets the classification with the largest
-output. However, in the simplest implementation, the algorithm assumes a linear boundary
-between classifications. Additionally, the algorithm assumes that the data's class conditional
-density functions follow a Gaussian distribution~\cite{farmer}, which is often not the case.
+classification's mean vector dotted with itself. The data point then gets the classification with the
+largest output. However, the algorithm assumes a linear boundary between classifications, and it assumes
+that the data's class conditional density functions follow a Gaussian distribution~\cite{farmer}, which
+is often not the case.
 
 The single-layer perceptron algorithm relaxes the assumption of a Gaussian distribution to
 provide a more general linear classifier. Instead of using a vector of means, the algorithm trains a
@@ -83,14 +84,14 @@ vector of weights by testing the training points against the weights, calculatin
 adjusting the weights accordingly. In its simplest form, the SLP only splits data into two
 classifications using a linear boundary and a single vector, assigning positive outputs to one class
 and negative outputs to another. However, the algorithm can also be generalized into a multiclass
-algorithm by storing weight vectors for each classification, as is the case with the Bayesian plug-
-in rule.
+algorithm by storing weight vectors for each classification, as is the case with the Bayesian linear
+classifier.
 
 As for colors, there are many ways to represent them, but the two most interesting from a
 classification perspective are RGB and HSV.\@ The data read from a color sensor or a camera pixel
 is represented in RGB, as most cameras and color sensors use red, green, and blue sensors to
 convert an image to a digital format. However, HSV more accurately represents how we humans
-perceive colors: a hue from red to violet, a saturation from colorful to gray, and a value from
+perceive colors: a hue from red to violet, a saturation from gray to colorful, and a value from
 dark to light. The transformation from RGB to HSV is also non-linear, so it is possible that one
 of the two results in linear boundaries between color classifications, while the other requires
 more complicated boundaries.
@@ -113,12 +114,14 @@ From there, the HSV value can be calculated~\cite{hsv}:
     S & = \begin{dcases}
               0,           & \text{if } V = 0 \\
               \frac{C}{V}, & \text{otherwise}
-          \end{dcases}
+          \end{dcases}            &
 \end{align*}
 
 Since hue is an angle, it can also be converted from a non-continuous range to the (continuous)
 unit circle by mapping it to the complex plane using Euler's formula:
-\( e^{i\theta} = \cos\left(\theta\right) + i \sin\left(\theta\right) \).
+\begin{align*}
+    e^{i\theta} & = \cos\left(\theta\right) + i \sin\left(\theta\right)
+\end{align*}
 
 \section{Results}
 
@@ -236,7 +239,7 @@ An example program output is shown in Appendix~\ref{program_demo}. With the give
 was classified with a perfect success rate, as was the RGB data at k=3. The RGB data misclassified
 one orange color as yellow at k=5, but the success rate was still high at 94\%. Given that both
 the RGB and HSV data could be accurately classified by the k-nearest neighbor algorithm, both data
-sets will be tested in the other algorithms.
+sets were tested in the other algorithms.
 
 \begin{table*}[!t]
     \centering
@@ -282,7 +285,7 @@ sets will be tested in the other algorithms.
     \end{minipage}
 \end{table*}
 
-From there, both data sets were tested in the Bayesian plug-in rule algorithm, the results of which
+From there, both data sets were tested in the Bayesian linear classifier, the results of which
 are shown in Table~\ref{rgb_bayes}~and~\ref{hsv_bayes}.
 
 Since the Bayesian algorithm relies on means, the HSV data set performs poorly, as the red's hue
@@ -356,12 +359,12 @@ complex plane. Doing so requires adjustments to the Bayesian algorithm:
 
 The data was then converted to complex HSV values and run through the Bayesian classifier, the
 results of which are shown in Table~\ref{hsv_complex_bayes}. This results in more reasonable classifications, so the
-complex HSV values will be used instead of the regular HSV values in the remaining algorithms.
+complex HSV values were used instead of the regular HSV values in the remaining algorithms.
 
 For both the RGB data in Table~\ref{rgb_bayes} and the complex HSV data in Table~\ref{hsv_complex_bayes}, the Bayesian
 classifier achieved a high success rate (89\% and 94\%, respectively), but there is still room for
-improvement given the success rate of the k-nearest neighbor algorithm. As a result, the single-
-layer perceptron algorithm will be tested on both data sets.
+improvement given the success rate of the k-nearest neighbor algorithm. As a result, the single-layer
+perceptron algorithm was tested on both data sets.
 
 Before running a multiclass SLP algorithm, however, a subset of the data was run through a standard, binary class SLP algorithm to test the behavior of
 the system.
@@ -384,11 +387,11 @@ adjusting the algorithm to subtract the mean of the entire testing data set from
 behavior improved significantly. The results of the algorithm are shown in Table~\ref{rgb_binary_slp}~and~\ref{hsv_binary_slp}.
 
 As can be seen with the complex HSV data, the adjustments to account for complex numbers
-were successful. Additionally, all data was successfully classified, so it is worth proceeding with
+were successful. Additionally, all data was successfully classified, so it was worth proceeding with
 the multiclass SLP algorithm.
 
-Compared to the binary SLP algorithm, the multiclass SLP algorithm stores multiple weight vectors
----one for each classification---and utilizes the ``one-vs.-rest''~\cite{bishop} method of training the
+Compared to the binary SLP algorithm, the multiclass SLP algorithm stores multiple weight vectors---one
+for each classification---and utilizes the ``one-vs.-rest''~\cite{bishop} method of training the
 weights. While training, the data point is tested against all the weight vectors, and the
 classification with the largest calculated value is assigned to the data point. If the classification is
 correct, then the weights are not adjusted. Otherwise, the weights of the correct class are
@@ -598,7 +601,7 @@ The data files used in the algorithms are as follows:
           \end{itemize}
 \end{itemize}
 
-\enlargethispage{-1.46in}
+\enlargethispage{-1.15in}
 
 \bibliographystyle{IEEEtran}
 \bibliography{IEEEabrv,refs}
