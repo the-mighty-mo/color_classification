@@ -16,6 +16,10 @@
 \usepackage[caption=false,font=footnotesize]{subfig}
 \usepackage{stfloats}
 
+\usepackage{algorithm, algpseudocodex}
+
+\renewcommand\thealgorithm{}
+
 \begin{document}
 \maketitle
 
@@ -57,10 +61,16 @@ create advanced, mathematically optimized classification boundaries.
 
 \section{Technical Discussion}
 
-When it comes to supervised machine learning, there are three fairly simple algorithms that stand
-out: k-nearest neighbors, the Bayesian linear classifier, and the single-layer perceptron algorithm.
+When it comes to color classification, there are several supervised machine learning algorithms
+available, and there are multiple methods to digitally represent colors, many of which involve nonlinear
+transformations.
 
-k-nearest neighbors is a very simple algorithm to implement and can handle non-linear
+\subsection{Supervised Machine Learning}
+
+There are three fairly simple supervised machine learning algorithms that stand out:
+k-nearest neighbors, the Bayesian linear classifier, and the single-layer perceptron algorithm.
+
+k-nearest neighbors is a very simple algorithm to implement and can handle nonlinear
 classification boundaries. The algorithm calculates the distance between the test data point and
 each training data point, and then it partial sorts those distances until it has the k nearest
 neighbors. The data gets whichever classification is most prominent among those neighbors.
@@ -87,12 +97,14 @@ and negative outputs to the other. However, the algorithm can also be generalize
 algorithm by storing weight vectors for each classification, as is the case with the Bayesian linear
 classifier.
 
-As for colors, there are many ways to represent them, but the two most interesting from a
+\subsection{Color Representation}
+
+There are many ways to digitally represent colors, but the two most interesting from a
 classification perspective are RGB and HSV.\@ The data read from a color sensor or a camera pixel
 is represented in RGB, as most cameras and color sensors use red, green, and blue sensors to
 convert an image to a digital format. However, HSV more accurately represents how we humans
 perceive colors: a hue from red to violet, a saturation from gray to colorful, and a value from
-dark to light. The transformation from RGB to HSV is also non-linear, so it is possible that one
+dark to light. The transformation from RGB to HSV is also nonlinear, so it is possible that one
 of the two results in linear boundaries between color classifications, while the other requires
 more complicated boundaries.
 
@@ -215,6 +227,14 @@ A training dataset of 90 RGB colors was collected and classified into six groups
 yellow, green, blue, and purple. Plotting the data in MATLAB (see Appendix~\ref{train_data_plots}), there are
 some noticeable clusters of colors, but the groups are not cleanly separated by linear boundaries.
 
+\begin{figure}[!t]
+    \centering
+    \subfloat{\includegraphics[width=0.9\columnwidth]{hsv_polar.png}}
+    \hfil
+    \caption{MATLAB~\cite{matlab} plot of training data HSV hues \( \left(\theta\right) \) and saturations \( \left(r\right) \) in polar form, colored by classification.}%
+    \label{hsv_polar}
+\end{figure}
+
 The data was then converted into the HSV format and plotted in MATLAB (see Appendix~\ref{train_data_plots}).
 Unlike the RGB colors, the HSV colors are clearly divided by hue with the classifications
 used. As a result, we can hypothesize that the linear classifiers will perform better with the HSV
@@ -224,22 +244,14 @@ the reds are very close in hue, as shown in Fig.~\ref{hsv_polar}. As a result, a
 handle wrapping at 360 degrees may misclassify red, as the mean of the data points is roughly
 that of the green colors.
 
-\begin{figure}[!t]
-    \centering
-    \subfloat{\includegraphics[width=0.9\columnwidth]{hsv_polar.png}}
-    \hfil
-    \caption{MATLAB~\cite{matlab} plot of training data HSV hues \( \left(\theta\right) \) and saturations \( \left(r\right) \) in polar form, colored by classification.}%
-    \label{hsv_polar}
-\end{figure}
-
 A small test set of 18 colors (three per classification) was collected and saved in both RGB and
 HSV formats. The training and test data for both RGB and HSV were then fed into the k-nearest
-neighbor algorithm at k=3 and k=5, with the results shown in Table~\ref{rgb_knn_3}~to~\ref{hsv_knn_5}.
-An example program output is shown in Appendix~\ref{program_demo}. With the given test data, the HSV data
-was classified with a perfect success rate, as was the RGB data at k=3. The RGB data misclassified
-one orange color as yellow at k=5, but the success rate was still high at 94\%. Given that both
-the RGB and HSV data could be accurately classified by the k-nearest neighbor algorithm, both data
-sets were tested in the other algorithms.
+neighbor algorithm (see Appendix~\ref{algorithms}) at k=3 and k=5, with the results shown in
+Table~\ref{rgb_knn_3}~to~\ref{hsv_knn_5}. An example program output is shown in Appendix~\ref{program_demo}.
+With the given test data, the HSV data was classified with a perfect success rate, as was the RGB data at k=3.
+The RGB data misclassified one orange color as yellow at k=5, but the success rate was still high at 94\%.
+Given that both the RGB and HSV data could be accurately classified by the k-nearest neighbor algorithm,
+both data sets were tested in the other algorithms.
 
 \begin{table*}[!t]
     \centering
@@ -287,18 +299,6 @@ sets were tested in the other algorithms.
 
 From there, both data sets were tested in the Bayesian linear classifier, the results of which
 are shown in Table~\ref{rgb_bayes}~and~\ref{hsv_bayes}.
-
-Since the Bayesian algorithm relies on means, the HSV data set performs poorly, as the red's hue
-wrapping at 360 is not handled correctly. This can be resolved by mapping the data points to the
-complex plane. Doing so requires adjustments to the Bayesian algorithm:
-\begin{itemize}
-    \item The means used by the algorithm need to be the conjugate of the training data means.
-          This way, when a test data point closely matches the classification, \( e^{i\theta} * e^{-i\theta} = 1 \),
-          so the real component of the dot product can be used to determine classification.
-
-    \item The mean offset \( \mu_0 \) needs to be calculated by taking the dot product of the means vector
-          with the conjugate means vector, eliminating complex values from the offset.
-\end{itemize}
 
 \begin{table}[!t]
     \centering
@@ -357,6 +357,20 @@ complex plane. Doing so requires adjustments to the Bayesian algorithm:
     \end{minipage}
 \end{table*}
 
+Since the Bayesian algorithm relies on means, the HSV data set performs poorly, as the red's hue
+wrapping at 360 is not handled correctly. This can be resolved by mapping the hues to the
+complex plane. Doing so requires adjustments to the Bayesian algorithm (see Appendix~\ref{algorithms}):
+\begin{itemize}
+    \item The means used by the algorithm need to be the conjugate of the training data means.
+          When a test data point closely matches the classification, \( e^{i\theta} * e^{-i\theta} = 1 \),
+          so the data is rotated onto the positive real plane. When a test data point does not closely
+          match the classification, the data is rotated away from the positive real plane. As a result,
+          the real component of the dot product can be used to determine classification.
+
+    \item The mean offset \( \mu_0 \) needs to be calculated by taking the dot product of the vector of means
+          with the vector of mean conjugates, resulting in a real-valued offset.
+\end{itemize}
+
 The data was then converted to complex HSV values and run through the Bayesian classifier, the
 results of which are shown in Table~\ref{hsv_complex_bayes}. This results in more reasonable classifications, so the
 complex HSV values were used instead of the regular HSV values in the remaining algorithms.
@@ -375,7 +389,7 @@ complex numbers:
 \begin{itemize}
     \item When training the weights, the conjugates of the training data point components are used
           to adjust the weight. Once again, this makes it so data points that match the classification
-          are rotated towards a real value of 1, strengthening its classification value.
+          are rotated towards the positive real axis, strengthening their classification values.
 
     \item When running the classifier on test data, the real component of the calculated
           classification value is used to determine classification.
@@ -400,10 +414,10 @@ rate and \( \mathbf{y}_k \) is the training data point, and the weights of the o
 by subtracting that same value. When testing data against the weights, whichever classification has the
 largest calculated value is assigned to the data point.
 
-Once again, the algorithm requires adjustments to support complex numbers:
+Once again, the algorithm requires adjustments to support complex numbers (see Appendix~\ref{algorithms}):
 \begin{itemize}
     \item When training the weights, the conjugates of the data point components are used to adjust
-          the weight.
+          the weights.
 
     \item The real component of the calculated classification value is used to determine the
           classification of data points.
@@ -484,36 +498,195 @@ blue, will perform better using RGB than with HSV.\@
 
 \appendices%
 
+\section{Supervised Machine Learning Algorithms}%
+\label{algorithms}
+
+The k-nearest neighbor algorithm is shown in Figure~\ref{knn}. The Bayesian linear classifier algorithm is
+shown in Figure~\ref{bayes}. Lastly, the multiclass single-layer perceptron algorithm is shown in Figure~\ref{slp}.
+
+The Bayesian linear classifier and the single-layer perceptron algorithms have been adjusted to
+support complex data.
+
+\begin{figure}[!b]
+    \centering
+    \setlength{\intextsep}{0pt}
+
+    \begin{algorithm}[H]
+        \caption{k-nearest neighbors}
+
+        \begin{flalign*}
+            \setlength{\arraycolsep}{0pt}
+            \begin{matrix*}[l]
+                \textbf{Input}  & \text{: } & T \text{, a set of training data points}; \\
+                \text{}         &           & \mathbf{d} \text{, the test data point};  \\
+                \text{}         &           & k \text{, number of nearest neighbors};   \\
+                \textbf{Output} & \text{: } & \text{The classification guess of } d;
+            \end{matrix*} &  &
+        \end{flalign*}
+        \begin{algorithmic}
+            \State%
+            \textbf{compute} distances between \( \mathbf{d} \) and all \( \mathbf{t} \in T \);
+
+            \State%
+            \textbf{partial sort} \( k \) smallest computed distances;
+
+            \State%
+            \textbf{select} \( k \)-nearest training points corresponding to \( k \)-smallest distances;
+
+            \State%
+            \textbf{count} number of occurrences of each classification among \( k \)-nearest neighbors;
+
+            \State\Return%
+            the most frequent classification;
+        \end{algorithmic}
+    \end{algorithm}
+
+    \caption{k-nearest neighbors algorithm.}%
+    \label{knn}
+\end{figure}
+
+\begin{figure}[!t]
+    \centering
+    \setlength{\intextsep}{0pt}
+
+    \begin{algorithm}[H]
+        \caption{Bayesian linear classifier}
+
+        \begin{flalign*}
+            \setlength{\arraycolsep}{0pt}
+            \begin{matrix*}[l]
+                \textbf{Input}  & \text{: } & T \text{, a set of training data points};       \\
+                \text{}         &           & \mathbf{d} \text{, the test data point};        \\
+                \textbf{Output} & \text{: } & \text{The classification guess of } \mathbf{d}; \\
+                \text{}         &           &
+            \end{matrix*} &  &
+        \end{flalign*}
+        \begin{algorithmic}
+            \State\Comment{Training}
+            \For{\textbf{each} classification \( c_i \) of \( \mathbf{t} \in T \)}
+                \State%
+                \( \mathbf{u}_i \gets \mathrm{mean}\left(\left \{ \mathbf{t} \in T : c_\mathbf{t} = c_i \right \} \right) \);
+
+                \State%
+                \( \mathbf{u}_i^* \gets \forall u_j \in \mathbf{u}_i, u_j \mapsto u_j^* \);
+
+                \State%
+                \( \left(\mathbf{w}_i, w_{i0}\right) \gets \left(2\mathbf{u}_i^*, \mathbf{u}_i^T \mathbf{u}_i^*\right) \);
+            \EndFor%
+
+            \State\Comment{Testing}
+            \ForAll{\( \left(\mathbf{w}_i, w_{i0}\right) \)}
+                \State%
+                \( g_i \gets \mathbf{w}_i^T \mathbf{d} - w_{i0} \);
+            \EndFor%
+
+            \State\Return%
+            classification \( c_i \) of the max computed \( \mathrm{Re}\left(g_i\right) \);
+        \end{algorithmic}
+    \end{algorithm}
+
+    \caption{Bayesian linear classifier algorithm.}%
+    \label{bayes}
+\end{figure}
+
+\begin{figure}[!t]
+    \centering
+    \setlength{\intextsep}{0pt}
+
+    \begin{algorithm}[H]
+        \caption{Multiclass single-layer perceptron}
+
+        \begin{flalign*}
+            \setlength{\arraycolsep}{0pt}
+            \begin{matrix*}[l]
+                \textbf{Input}  & \textbf{: } & T \text{, a set of training data points};          \\
+                \text{}         &           & \mathbf{d} \text{, the test data point};           \\
+                \text{}         &           & \eta \text{, the learning rate};                   \\
+                \text{}         &           & \vartheta \text{, the threshold to stop training}; \\
+                \textbf{Output} & \textbf{: } & \text{The classification guess of } \mathbf{d};
+            \end{matrix*} &  &
+        \end{flalign*}
+        \begin{algorithmic}
+            \Require%
+            \( \forall \mathbf{t} \in T, \mathbf{t} = \left<t_1, t_2, \dots, t_n\right> \); \\
+            \( \forall \mathbf{t} \in T, c_\mathbf{t} = \) classification of \( \mathbf{t} \); \\
+            \( \mathbf{d} = \left<d_1, d_2, \dots, d_n\right>; \) \\
+            \( 0 < \eta \leq 1 \); \\
+            \( \vartheta \geq 0 \)
+
+            \State%
+
+            \For{\textbf{each} classification \( c_i \) of \( \mathbf{t} \in T \)}
+                \State%
+                \( \mathbf{w}_i \gets \left(n + 1\right) \)-dimensional vector of random weights;
+            \EndFor%
+
+            \State\Comment{Training}
+            \For{\( iter \) in \( 1 \dots MaxIter \)}
+                \State%
+                \( cnt_{bad} \gets 0 \);
+
+                \For{\( \mathbf{t} \in T \)}
+                    \State%
+                    \( \mathbf{y} \gets \left<1, t_1, t_2, \dots, t_n\right> \);
+
+                    \For{\( \mathbf{w}_i \)}
+                        \State%
+                        \( g_i \gets \mathbf{w}_i^T \mathbf{y} \);
+                    \EndFor%
+
+                    \State%
+                    \( c_{guess} \gets c_i \) of the max computed \( \mathrm{Re}\left(g_i\right) \);
+
+                    \If{\( c_{guess} \neq c_\mathbf{t} \)}
+                        \State%
+                        \( cnt_{bad} \gets cnt_{bad} + 1 \);
+
+                        \State%
+                        \( \mathbf{y}^* \gets \forall y_j \in \mathbf{y}, y_j \mapsto y_j^* \);
+
+                        \State%
+                        \( \mathbf{w}_{adj} \gets \eta \mathbf{y}^* \);
+
+                        \For{\textbf{each} classification \( c_i \) of \( \mathbf{t} \in T \)}
+
+                            \If{\( c_i = c_\mathbf{t} \)}
+                                \State%
+                                \( \mathbf{w}_i \gets \mathbf{w}_i + \mathbf{w}_{adj} \);
+                            \Else%
+                                \State%
+                                \( \mathbf{w}_i \gets \mathbf{w}_i - \mathbf{w}_{adj} \);
+                            \EndIf%
+                        \EndFor%
+                    \EndIf%
+                \EndFor%
+
+                \If{\( cnt_{bad} \leq \vartheta \)}
+                    \State%
+                    break;
+                \EndIf%
+            \EndFor%
+
+            \State\Comment{Testing}
+            \ForAll{\( \mathbf{w}_i \)}
+                \State%
+                \( \mathbf{y} \gets \left<1, d_1, d_2, \dots, d_n \right> \);
+
+                \State%
+                \( g_i \gets \mathbf{w}_i^T \mathbf{y} \);
+            \EndFor%
+
+            \State\Return%
+            classification \( c_i \) of the max computed \( \mathrm{Re}\left(g_i\right) \);
+        \end{algorithmic}
+    \end{algorithm}
+
+    \caption{Multiclass single-layer perceptron algorithm.}%
+    \label{slp}
+\end{figure}
+
 \section{Plots of Training Data}%
 \label{train_data_plots}
-
-\begin{figure*}[!b]
-    \centering
-    \subfloat{\includegraphics[width=\columnwidth]{rgb_isometric.png}}
-    \hfill
-    \subfloat{\includegraphics[width=\columnwidth]{rgb_front.png}}
-    \hfill
-    \subfloat{\includegraphics[width=\columnwidth]{rgb_left.png}}
-    \hfill
-    \subfloat{\includegraphics[width=\columnwidth]{rgb_top.png}}
-    \hfill
-    \caption{MATLAB~\cite{matlab} plot of training data RGB values, colored by classification.}%
-    \label{rgb_data}
-\end{figure*}
-
-\begin{figure*}[!t]
-    \centering
-    \subfloat{\includegraphics[width=\columnwidth]{hsv_isometric.png}}
-    \hfill
-    \subfloat{\includegraphics[width=\columnwidth]{hsv_front.png}}
-    \hfill
-    \subfloat{\includegraphics[width=\columnwidth]{hsv_left.png}}
-    \hfill
-    \subfloat{\includegraphics[width=\columnwidth]{hsv_top.png}}
-    \hfill
-    \caption{MATLAB~\cite{matlab} plot of training data HSV values, colored by classification.}%
-    \label{hsv_data}
-\end{figure*}
 
 Fig.~\ref{rgb_data} shows plots of the RGB training data, and Fig.~\ref{hsv_data} shows
 plots of the HSV training data.
@@ -523,16 +696,10 @@ plots of the HSV training data.
 
 Fig.~\ref{program_output} shows an example of the output from running the multiclass SLP program.
 
-\begin{figure*}[!t]
-    \centering
-    \includegraphics[width=0.75\textwidth]{program_demo.png}
-    \hfil
-    \caption{Example program output of the multiclass SLP using complex HSV colors.}%
-    \label{program_output}
-\end{figure*}
-
 \section{Program Source Code and Data Files}%
 \label{program_source}
+
+\enlargethispage{-0.66in}
 
 The data in this study is plotted in MATLAB~\cite{matlab}, and the algorithms are written in Rust.
 The source code and data files are available in \mbox{benjamin\_hall\_color\_classification.zip}.
@@ -601,7 +768,45 @@ The data files used in the algorithms are as follows:
           \end{itemize}
 \end{itemize}
 
-\enlargethispage{-1.15in}
+\begin{figure*}[!b]
+    \centering
+    \subfloat{\includegraphics[width=\columnwidth]{rgb_isometric.png}}
+    \hfill
+    \subfloat{\includegraphics[width=\columnwidth]{rgb_front.png}}
+    \hfill
+    \subfloat{\includegraphics[width=\columnwidth]{rgb_left.png}}
+    \hfill
+    \subfloat{\includegraphics[width=\columnwidth]{rgb_top.png}}
+    \hfill
+    \caption{MATLAB~\cite{matlab} plot of training data RGB values, colored by classification.}%
+    \label{rgb_data}
+\end{figure*}
+
+\begin{figure*}[!t]
+    \centering
+    \subfloat{\includegraphics[width=\columnwidth]{hsv_isometric.png}}
+    \hfill
+    \subfloat{\includegraphics[width=\columnwidth]{hsv_front.png}}
+    \hfill
+    \subfloat{\includegraphics[width=\columnwidth]{hsv_left.png}}
+    \hfill
+    \subfloat{\includegraphics[width=\columnwidth]{hsv_top.png}}
+    \hfill
+    \caption{MATLAB~\cite{matlab} plot of training data HSV values, colored by classification.}%
+    \label{hsv_data}
+\end{figure*}
+
+\begin{figure*}[!t]
+    \centering
+    \includegraphics[width=0.75\textwidth]{program_demo.png}
+    \hfil
+    \caption{Example program output of the multiclass SLP using complex HSV colors.}%
+    \label{program_output}
+\end{figure*}
+
+\newpage
+
+\enlargethispage{-2.22in}
 
 \bibliographystyle{IEEEtran}
 \bibliography{IEEEabrv,refs}
