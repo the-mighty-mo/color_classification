@@ -616,6 +616,9 @@ support complex data.
 
             \State\Comment{Training}
 
+            \State%
+            \( \mathbf{u} \gets \mathrm{mean}\left(\left \{ \mathbf{t} \in T \right \}\right) \);
+
             \For{\textbf{each} classification \( c_i \) of \( \mathbf{t} \in T \)}
                 \State%
                 \( \mathbf{w}_i \gets \left(n + 1\right) \)-dimensional vector of random weights;
@@ -626,7 +629,7 @@ support complex data.
 
                 \For{\( \mathbf{t} \in T \)}
                     \State%
-                    \( \mathbf{y} \gets \left<1, t_1, t_2, \dots, t_n\right> \);
+                    \( \mathbf{y} \gets \left<1, t_1 - u_1, t_2 - u_2, \dots, t_n - u_n\right> \);
 
                     \ForAll{\( \mathbf{w}_i \)}
                         \State%
@@ -668,7 +671,7 @@ support complex data.
             \State\Comment{Testing}
 
             \State%
-            \( \mathbf{y} \gets \left<1, d_1, d_2, \dots, d_n \right> \);
+            \( \mathbf{y} \gets \left<1, d_1 - u_1, d_2 - u_2, \dots, d_n - u_n\right> \);
 
             \ForAll{\( \mathbf{w}_i \)}
                 \State%
@@ -698,7 +701,7 @@ Fig.~\ref{program_output} shows an example of the output from running the multic
 \section{Program Source Code and Data Files}%
 \label{program_source}
 
-\enlargethispage{-0.74in}
+\enlargethispage{-0.585in}
 
 The data in this study is plotted in MATLAB~\cite{matlab}, and the algorithms are written in Rust.
 The source code and data files are available in \mbox{benjamin\_hall\_color\_classification.zip}.
