@@ -363,8 +363,8 @@ complex plane. Doing so requires adjustments to the Bayesian algorithm (see Appe
 \begin{itemize}
     \item The means used by the algorithm need to be the conjugate of the training data means.
           When a test data point closely matches the classification, \( e^{i\theta} * e^{-i\theta} = 1 \),
-          so the data is rotated onto the positive real plane. When a test data point does not closely
-          match the classification, the data is rotated away from the positive real plane. As a result,
+          so the data is rotated onto the positive real axis. When a test data point does not closely
+          match the classification, the data is rotated away from the positive real axis. As a result,
           the real component of the dot product can be used to determine classification.
 
     \item The mean offset \( \mu_0 \) needs to be calculated by taking the dot product of the vector of means
@@ -581,7 +581,7 @@ support complex data.
             \EndFor%
 
             \State\Return%
-            classification \( c_i \) of the max computed \( \mathrm{Re}\left(g_i\right) \);
+            \( c_i \) of the max \( \mathrm{Re}\left(g_i\right) \);
         \end{algorithmic}
     \end{algorithm}
 
@@ -611,17 +611,15 @@ support complex data.
             \( \forall \mathbf{t} \in T, \mathbf{t} = \left<t_1, t_2, \dots, t_n\right> \); \\
             \( \forall \mathbf{t} \in T, c_\mathbf{t} = \) classification of \( \mathbf{t} \); \\
             \( \mathbf{d} = \left<d_1, d_2, \dots, d_n\right>; \) \\
-            \( 0 < \eta \leq 1 \); \\
-            \( \vartheta \geq 0 \)
+            \( \eta > 0 \); \\
+            \( \vartheta \geq 0 \);
 
-            \State%
+            \State\Comment{Training}
 
             \For{\textbf{each} classification \( c_i \) of \( \mathbf{t} \in T \)}
                 \State%
                 \( \mathbf{w}_i \gets \left(n + 1\right) \)-dimensional vector of random weights;
             \EndFor%
-
-            \State\Comment{Training}
             \For{\( iter \) in \( 1 \dots MaxIter \)}
                 \State%
                 \( cnt_{bad} \gets 0 \);
@@ -630,13 +628,13 @@ support complex data.
                     \State%
                     \( \mathbf{y} \gets \left<1, t_1, t_2, \dots, t_n\right> \);
 
-                    \For{\( \mathbf{w}_i \)}
+                    \ForAll{\( \mathbf{w}_i \)}
                         \State%
                         \( g_i \gets \mathbf{w}_i^T \mathbf{y} \);
                     \EndFor%
 
                     \State%
-                    \( c_{guess} \gets c_i \) of the max computed \( \mathrm{Re}\left(g_i\right) \);
+                    \( c_{guess} \gets c_i \) of the max \( \mathrm{Re}\left(g_i\right) \);
 
                     \If{\( c_{guess} \neq c_\mathbf{t} \)}
                         \State%
@@ -668,16 +666,17 @@ support complex data.
             \EndFor%
 
             \State\Comment{Testing}
-            \ForAll{\( \mathbf{w}_i \)}
-                \State%
-                \( \mathbf{y} \gets \left<1, d_1, d_2, \dots, d_n \right> \);
 
+            \State%
+            \( \mathbf{y} \gets \left<1, d_1, d_2, \dots, d_n \right> \);
+
+            \ForAll{\( \mathbf{w}_i \)}
                 \State%
                 \( g_i \gets \mathbf{w}_i^T \mathbf{y} \);
             \EndFor%
 
             \State\Return%
-            classification \( c_i \) of the max computed \( \mathrm{Re}\left(g_i\right) \);
+            \( c_i \) of the max \( \mathrm{Re}\left(g_i\right) \);
         \end{algorithmic}
     \end{algorithm}
 
@@ -699,7 +698,7 @@ Fig.~\ref{program_output} shows an example of the output from running the multic
 \section{Program Source Code and Data Files}%
 \label{program_source}
 
-\enlargethispage{-0.66in}
+\enlargethispage{-0.74in}
 
 The data in this study is plotted in MATLAB~\cite{matlab}, and the algorithms are written in Rust.
 The source code and data files are available in \mbox{benjamin\_hall\_color\_classification.zip}.
