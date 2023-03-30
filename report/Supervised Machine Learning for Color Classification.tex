@@ -501,8 +501,8 @@ blue, will perform better using RGB than with HSV.\@
 \section{Supervised Machine Learning Algorithms}%
 \label{algorithms}
 
-The k-nearest neighbor algorithm is shown in Figure~\ref{knn}. The Bayesian linear classifier algorithm is
-shown in Figure~\ref{bayes}. Lastly, the multiclass single-layer perceptron algorithm is shown in Figure~\ref{slp}.
+The k-nearest neighbor algorithm is shown in Fig.~\ref{knn}. The Bayesian linear classifier algorithm is
+shown in Fig.~\ref{bayes}. Lastly, the multiclass single-layer perceptron algorithm is shown in Fig.~\ref{slp}.
 
 The Bayesian linear classifier and the single-layer perceptron algorithms have been adjusted to
 support complex data.
@@ -571,13 +571,13 @@ support complex data.
                 \( \mathbf{u}_i^* \gets \forall u_j \in \mathbf{u}_i, u_j \mapsto u_j^* \);
 
                 \State%
-                \( \left(\mathbf{w}_i, w_{i0}\right) \gets \left(2\mathbf{u}_i^*, \mathbf{u}_i^T \mathbf{u}_i^*\right) \);
+                \( \left(\mathbf{w}_i, w_{i0}\right) \gets \left(2\mathbf{u}_i^*, -\mathbf{u}_i^T \mathbf{u}_i^*\right) \);
             \EndFor%
 
             \State\Comment{Testing}
             \ForAll{\( \left(\mathbf{w}_i, w_{i0}\right) \)}
                 \State%
-                \( g_i \gets \mathbf{w}_i^T \mathbf{d} - w_{i0} \);
+                \( g_i \gets \mathbf{w}_i^T \mathbf{d} + w_{i0} \);
             \EndFor%
 
             \State\Return%
