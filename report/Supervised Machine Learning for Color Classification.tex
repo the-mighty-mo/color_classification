@@ -81,8 +81,8 @@ during the entire program runtime to perform the distance calculations and parti
 
 The Bayesian linear classifier fixes both the time and memory costs by calculating ahead of time the
 mean vectors of the classifications. The algorithm only needs to keep a vector of classification means
-during program runtime, and classifying a test data point is simple: for each classification, take
-the dot product of the data point with the classification's mean vector and add the result of the
+during program runtime, and classifying a test data point is simple: for each classification, take double
+the dot product of the data point with the classification's mean vector, and subtract the result of the
 classification's mean vector dotted with itself. The data point then gets the classification with the
 largest output. However, the algorithm assumes a linear boundary between classifications, and it assumes
 that the data's class conditional density functions follow a Gaussian distribution~\cite{farmer}, which
@@ -105,35 +105,35 @@ is represented in RGB, as most cameras and color sensors use red, green, and blu
 convert an image to a digital format. However, HSV more accurately represents how we humans
 perceive colors: a hue from red to violet, a saturation from gray to colorful, and a value from
 dark to light. The transformation from RGB to HSV is also nonlinear, so it is possible that one
-of the two results in linear boundaries between color classifications, while the other requires
-more complicated boundaries.
+results in linear boundaries between color classifications, while the other requires more
+complicated boundaries.
 
 A color can be converted from RGB to HSV by firstly calculating the chroma of the RGB value:
-\begin{align*}
-     & M = \max\left(R, G, B\right) & \\
-     & m = \min\left(R, G, B\right) & \\
-     & C = M - m                    &
-\end{align*}
+\begin{align}
+     & M = \max\left(R, G, B\right) \\
+     & m = \min\left(R, G, B\right) \\
+     & C = M - m
+\end{align}
 From there, the HSV value can be calculated~\cite{hsv}:
-\begin{align*}
-    V & = M                                           &              \\
+\begin{align}
+    V & = M                                                          \\
     H & = 60^\circ \times \begin{dcases}
                               0,                      & \text{if } C = 0 \\
                               \frac{G - B}{C} \mod 6, & \text{if } V = R \\
                               \frac{B - R}{C} + 2,    & \text{if } V = G \\
                               \frac{R - G}{C} + 4,    & \text{if } V = B
-                          \end{dcases} & \\
+                          \end{dcases} \\
     S & = \begin{dcases}
               0,           & \text{if } V = 0 \\
               \frac{C}{V}, & \text{otherwise}
-          \end{dcases}            &
-\end{align*}
+          \end{dcases}
+\end{align}
 
 Since hue is an angle, it can also be converted from a non-continuous range to the (continuous)
 unit circle by mapping it to the complex plane using Euler's formula:
-\begin{align*}
+\begin{align}
     e^{i\theta} & = \cos\left(\theta\right) + i \sin\left(\theta\right)
-\end{align*}
+\end{align}
 
 \section{Results}
 
@@ -225,7 +225,7 @@ unit circle by mapping it to the complex plane using Euler's formula:
 
 A training dataset of 90 RGB colors was collected and classified into six groups: red, orange,
 yellow, green, blue, and purple. Plotting the data in MATLAB (see Appendix~\ref{train_data_plots}), there are
-some noticeable clusters of colors, but the groups are not cleanly separated by linear boundaries.
+some noticeable clusters of colors, but the groups are not clearly separated by linear boundaries.
 
 \begin{figure}[!t]
     \centering
@@ -235,7 +235,7 @@ some noticeable clusters of colors, but the groups are not cleanly separated by 
     \label{hsv_polar}
 \end{figure}
 
-The data was then converted into the HSV format and plotted in MATLAB (see Appendix~\ref{train_data_plots}).
+The data was then converted to the HSV format and plotted in MATLAB (see Appendix~\ref{train_data_plots}).
 Unlike the RGB colors, the HSV colors are clearly divided by hue with the classifications
 used. As a result, we can hypothesize that the linear classifiers will perform better with the HSV
 colors than the RGB colors with the given classifications. It is important to note that some of the
