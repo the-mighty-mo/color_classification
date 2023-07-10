@@ -35,7 +35,7 @@ impl Complex {
         if self.im == 0.0 {
             self.re
         } else {
-            (self.re.powi(2) + self.im.powi(2)).sqrt()
+            self.re.hypot(self.im)
         }
     }
 
@@ -76,7 +76,6 @@ impl Neg for Complex {
 
 impl AddAssign for Complex {
     #[inline]
-    #[must_use]
     fn add_assign(&mut self, rhs: Self) {
         self.re += rhs.re;
         self.im += rhs.im;
@@ -96,7 +95,6 @@ impl Add for Complex {
 
 impl SubAssign for Complex {
     #[inline]
-    #[must_use]
     fn sub_assign(&mut self, rhs: Self) {
         self.re -= rhs.re;
         self.im -= rhs.im;
@@ -116,7 +114,6 @@ impl Sub for Complex {
 
 impl MulAssign for Complex {
     #[inline]
-    #[must_use]
     fn mul_assign(&mut self, rhs: Self) {
         let re = self.re * rhs.re - self.im * rhs.im;
         let im = self.re * rhs.im + self.im * rhs.re;
@@ -137,7 +134,6 @@ impl Mul for Complex {
 
 impl DivAssign for Complex {
     #[inline]
-    #[must_use]
     fn div_assign(&mut self, rhs: Self) {
         let rhs_conj = rhs.conjugate();
         let num = *self * rhs_conj;
@@ -162,7 +158,7 @@ impl Sum for Complex {
     #[inline]
     #[must_use]
     fn sum<I: Iterator<Item = Self>>(iter: I) -> Self {
-        iter.fold(Complex::default(), |a, b| a + b)
+        iter.fold(Self::default(), |a, b| a + b)
     }
 }
 
@@ -193,7 +189,7 @@ impl Display for Complex {
 impl From<f64> for Complex {
     #[inline]
     fn from(value: f64) -> Self {
-        Complex { re: value, im: 0.0 }
+        Self { re: value, im: 0.0 }
     }
 }
 
