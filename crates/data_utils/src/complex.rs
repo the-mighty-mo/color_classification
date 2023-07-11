@@ -20,6 +20,22 @@ pub struct Complex {
 impl Complex {
     /// Creates a complex number from polar coordinates.
     /// The angle `theta` should be given in radians.
+    ///
+    /// # Examples
+    ///
+    /// Basic usage:
+    /// ```
+    /// # use data_utils::Complex;
+    /// let polar = Complex::from_polar(1.0, 0.0);
+    /// let rect = Complex { re: 1.0, im: 0.0 };
+    /// assert!((polar.re - rect.re).abs() < f64::EPSILON);
+    /// assert!((polar.im - rect.im).abs() < f64::EPSILON);
+    ///
+    /// let polar = Complex::from_polar(2.0, std::f64::consts::FRAC_PI_2);
+    /// let rect = Complex { re: 0.0, im: 2.0 };
+    /// assert!((polar.re - rect.re).abs() < f64::EPSILON);
+    /// assert!((polar.im - rect.im).abs() < f64::EPSILON);
+    /// ```
     #[inline]
     #[must_use]
     pub fn from_polar(r: f64, theta: f64) -> Self {
@@ -29,6 +45,15 @@ impl Complex {
     }
 
     /// Calculates the magnitude of the complex number.
+    ///
+    /// # Examples
+    ///
+    /// Basic usage:
+    /// ```
+    /// # use data_utils::Complex;
+    /// let complex = Complex { re: 4.0, im: 3.0 };
+    /// assert!((complex.magnitude() - 5.0).abs() < f64::EPSILON);
+    /// ```
     #[inline]
     #[must_use]
     pub fn magnitude(&self) -> f64 {
@@ -40,6 +65,15 @@ impl Complex {
     }
 
     /// Calculates the angle of the complex number in radians.
+    ///
+    /// # Examples
+    ///
+    /// Basic usage:
+    /// ```
+    /// # use data_utils::Complex;
+    /// let complex = Complex { re: 1.0, im: 1.0 };
+    /// assert!((complex.angle() - std::f64::consts::FRAC_PI_4).abs() < f64::EPSILON);
+    /// ```
     #[inline]
     #[must_use]
     pub fn angle(&self) -> f64 {
@@ -47,6 +81,15 @@ impl Complex {
     }
 
     /// Scales the complex number.
+    ///
+    /// # Examples
+    ///
+    /// Basic usage:
+    /// ```
+    /// # use data_utils::Complex;
+    /// let complex = Complex { re: 1.0, im: 2.0 };
+    /// assert_eq!(complex.scale(2.0), Complex { re: 2.0, im: 4.0 });
+    /// ```
     #[inline]
     #[must_use]
     pub fn scale(mut self, scalar: f64) -> Self {
@@ -56,6 +99,15 @@ impl Complex {
     }
 
     /// Calculates the conjugate of the complex number.
+    ///
+    /// # Examples
+    ///
+    /// Basic usage:
+    /// ```
+    /// # use data_utils::Complex;
+    /// let complex = Complex { re: 1.0, im: 2.0 };
+    /// assert_eq!(complex.conjugate(), Complex { re: 1.0, im: -2.0 });
+    /// ```
     #[inline]
     #[must_use]
     pub fn conjugate(mut self) -> Self {
@@ -139,7 +191,7 @@ impl DivAssign for Complex {
         let num = *self * rhs_conj;
         // complex num * its conjugate = real number
         let denom = (rhs * rhs_conj).re;
-        *self = num.scale(1.0 / denom);
+        *self = num.scale(denom.recip());
     }
 }
 
@@ -201,5 +253,38 @@ impl FromStr for Complex {
         let im = im.split('i').next().unwrap_or("0.0");
         let (re, im) = (re.parse()?, im.parse()?);
         Ok(Self { re, im })
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use super::*;
+
+    #[test]
+    fn complex_from_str() {
+        let complex = Complex::from_str("1.0").unwrap();
+        assert_eq!(complex, Complex::from(1.0));
+
+        let complex = Complex::from_str("1.0+2.0i").unwrap();
+        assert_eq!(complex, Complex { re: 1.0, im: 2.0 });
+    }
+
+    #[test]
+    fn complex_ops() {
+        let a = Complex { re: 1.0, im: 2.0 };
+        let b = Complex { re: 2.0, im: 3.0 };
+
+        let sum = a + b;
+        assert_eq!(sum, Complex { re: 3.0, im: 5.0 });
+
+        let diff = b - a;
+        assert_eq!(diff, Complex { re: 1.0, im: 1.0 });
+
+        let mult = a * b;
+        assert_eq!(mult, Complex { re: -4.0, im: 7.0 });
+
+        let div = b / a;
+        assert!((div.re - 1.6).abs() < f64::EPSILON);
+        assert!((div.im + 0.2).abs() < f64::EPSILON);
     }
 }

@@ -24,6 +24,15 @@ impl Debug for Point {
 
 impl Point {
     /// Returns the magnitude of the point vector.
+    ///
+    /// # Examples
+    ///
+    /// Basic usage:
+    /// ```
+    /// # use data_utils::Point;
+    /// let point = Point(vec![3.0.into(), 4.0.into()]);
+    /// assert!((point.magnitude() - 5.0).abs() < f64::EPSILON);
+    /// ```
     #[inline]
     #[must_use]
     pub fn magnitude(&self) -> f64 {
@@ -37,6 +46,15 @@ impl Point {
     }
 
     /// Scales the point by the given scalar.
+    ///
+    /// # Examples
+    ///
+    /// Basic usage:
+    /// ```
+    /// # use data_utils::Point;
+    /// let point = Point(vec![1.0.into(), 2.0.into()]);
+    /// assert_eq!(point.scale(2.0), Point(vec![2.0.into(), 4.0.into()]));
+    /// ```
     #[inline]
     #[must_use]
     pub fn scale(mut self, scalar: f64) -> Self {
@@ -47,6 +65,16 @@ impl Point {
     }
 
     /// Computes the dot product of two points.
+    ///
+    /// # Examples
+    ///
+    /// Basic usage:
+    /// ```
+    /// # use data_utils::{Complex, Point};
+    /// let a = Point(vec![1.0.into(), 2.0.into()]);
+    /// let b = Point(vec![2.0.into(), 3.0.into()]);
+    /// assert_eq!(a.dot(&b), 8.0.into());
+    /// ```
     #[inline]
     #[must_use]
     pub fn dot(&self, other: &Self) -> Complex {

@@ -39,7 +39,7 @@ where
     let train_data_means = train_data_grp.into_iter().map(|(class, points)| {
         let cnt = points.len() as f64;
         // sum together points and scale by 1/cnt
-        let mean = points.into_iter().sum::<Point>().scale(1.0 / cnt);
+        let mean = points.into_iter().sum::<Point>().scale(cnt.recip());
         (class, mean)
     });
 

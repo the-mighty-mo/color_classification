@@ -43,3 +43,15 @@ impl<T> PartialSort<T> for [T] {
         }
     }
 }
+
+#[cfg(test)]
+mod test {
+    use super::*;
+
+    #[test]
+    fn partial_sort_vec() {
+        let mut vec = vec![1.0, 5.0, 4.0, 7.0, 3.0];
+        vec.partial_sort_by(3, f64::total_cmp);
+        assert_eq!(vec[..3], [1.0, 3.0, 4.0]);
+    }
+}

@@ -67,3 +67,22 @@ where
         write!(f, "{}", self.class)
     }
 }
+
+#[cfg(test)]
+mod test {
+    use super::*;
+
+    #[test]
+    fn data_point_from_str() {
+        let data = DataPoint::<String>::try_from("0.954+0.3i   1.0   0.7   red").unwrap();
+        let expected = DataPoint::<String> {
+            point: Point(vec![
+                Complex { re: 0.954, im: 0.3 },
+                Complex::from_polar(1.0, 0.0),
+                Complex::from_polar(0.7, 0.0),
+            ]),
+            class: String::from("red"),
+        };
+        assert_eq!(data, expected);
+    }
+}
