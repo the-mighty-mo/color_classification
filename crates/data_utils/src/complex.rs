@@ -286,5 +286,8 @@ mod test {
         let div = b / a;
         assert!((div.re - 1.6).abs() < f64::EPSILON);
         assert!((div.im + 0.2).abs() < f64::EPSILON);
+
+        let sum_iter: Complex = [a, b].into_iter().sum();
+        assert_eq!(sum_iter, sum);
     }
 }

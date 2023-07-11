@@ -308,3 +308,23 @@ impl<'a> Sum<&'a Self> for Point {
         iter.fold(Self::default(), |a, b| a + b)
     }
 }
+
+#[cfg(test)]
+mod test {
+    use super::*;
+
+    #[test]
+    fn point_ops() {
+        let a = Point(vec![1.0.into(), 2.0.into()]);
+        let b = Point(vec![3.0.into(), 4.0.into(), 5.0.into()]);
+
+        let sum = &a + &b;
+        assert_eq!(sum, Point(vec![4.0.into(), 6.0.into(), 5.0.into()]));
+
+        let diff = &b - &a;
+        assert_eq!(diff, Point(vec![2.0.into(), 2.0.into(), 5.0.into()]));
+
+        let sum_iter: Point = [a, b].iter().sum();
+        assert_eq!(sum_iter, sum);
+    }
+}
