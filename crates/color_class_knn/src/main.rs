@@ -64,7 +64,7 @@ fn main() {
     };
 
     // parse training data
-    let mut train_data = {
+    let train_data = {
         // open and read file
         let train_data_file = File::open(train_data_file_name);
         let Ok(train_data_file_contents) = data_utils::io::read_file(train_data_file) else {
@@ -106,8 +106,7 @@ fn main() {
     };
 
     // run k-nearest neighbor algorithm
-    let test_res =
-        data_utils::classify::k_nearest_neighbor(&mut train_data, &test_data, num_neighbors);
+    let test_res = data_utils::classify::k_nearest_neighbor(&train_data, &test_data, num_neighbors);
     // print the results (formatted)
     println!("{test_res:#?}");
 }

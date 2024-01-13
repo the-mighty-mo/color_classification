@@ -11,7 +11,7 @@ use std::{collections::HashMap, hash::Hash};
 /// on the given test data for the specified number of neighbors.
 #[must_use]
 pub fn k_nearest_neighbor<'a, T>(
-    train_data: &mut [DataPoint<T>],
+    train_data: &[DataPoint<T>],
     test_data: &'a [DataPoint<T>],
     num_neighbors: usize,
 ) -> Vec<Classification<'a, T>>
