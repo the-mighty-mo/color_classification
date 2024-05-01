@@ -221,7 +221,7 @@ where
                     *weight = weight.conjugate();
                 }
                 // update weights
-                for weights in weights_vec.iter_mut() {
+                for weights in &mut weights_vec {
                     if weights.class == d.class {
                         // increase the weights of the correct class
                         weights.w += &weight_adjustment;

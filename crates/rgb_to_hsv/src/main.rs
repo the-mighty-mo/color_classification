@@ -5,7 +5,7 @@
 
 use std::{
     env,
-    fs::{File, OpenOptions},
+    fs::File,
     io::{self, BufWriter, Write},
 };
 
@@ -84,7 +84,7 @@ fn main() {
     });
 
     {
-        let Ok(output_file) = OpenOptions::new().write(true).create(true).open(output_data_file_name) else {
+        let Ok(output_file) = File::create(output_data_file_name) else {
             println!("Error: could not open output file");
             return;
         };
