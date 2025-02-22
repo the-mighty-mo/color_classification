@@ -90,7 +90,9 @@ fn main() {
 
     // convert to HSV output data
     let output_data = input_data.into_iter().map(|mut d| {
-        let [r, g, b] = d.point.0[0..3] else { unreachable!() };
+        let [r, g, b] = d.point.0[0..3] else {
+            unreachable!()
+        };
         let (r, g, b) = (r.re as u8, g.re as u8, b.re as u8);
         let Hsv { h, s, v } = Hsv::from(Rgb { r, g, b });
         d.point.0[0..3].copy_from_slice(&[
